@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuthForge - Demo Interface</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid var(--border);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .role-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 0.5rem;
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .role-btn:hover {
+            border-color: var(--text);
+            color: var(--text);
+        }
+
+        .role-btn.active {
+            background-color: rgba(37, 99, 235, 0.2);
+            border-color: var(--primary);
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background-color: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        button.primary-btn {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: none;
+            background-color: var(--primary);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button.primary-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #result, #apiResult {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            display: none;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .error {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+
+        .api-tester {
+            display: none;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .api-tester h3 {
+            font-size: 1.1rem;
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .api-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .api-btn {
+            flex: 1;
+            padding: 0.5rem;
+            background-color: var(--border);
+            color: var(--text);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .api-btn:hover {
+            background-color: #475569;
+        }
+
+        .demo-creds {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🔐 AuthForge Roles Test</h2>
+        <p class="subtitle">Test authentication & authorization</p>
+
+        <div class="role-selector">
+            <button class="role-btn active" id="btnAdmin">Admin Role</button>
+            <button class="role-btn" id="btnUser">User Role</button>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" value="admin@authforge.io" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" value="Admin@123456!" required>
+            </div>
+            <button type="submit" id="submitBtn" class="primary-btn">Authenticate</button>
+        </form>
+
+        <div id="result"></div>
+
+        <div id="apiTester" class="api-tester">
+            <h3>Test Authorization</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top:-0.5rem; margin-bottom: 1rem;">
+                Use the token to access protected routes.
+            </p>
+            <div class="api-buttons">
+                <button class="api-btn" id="btnMyProfile" title="Accessible by both User and Admin">Get My Profile</button>
+                <button class="api-btn" id="btnAllUsers" title="Accessible ONLY by Admin">Get All Users</button>
+            </div>
+            <div id="apiResult"></div>
+        </div>
+
+        <div class="demo-creds">
+            <div>
+                <strong>Admin</strong><br>
+                admin@authforge.io<br>
+                Admin@123456!
+            </div>
+            <div style="text-align: right;">
+                <strong>User</strong><br>
+                user@authforge.io<br>
+                User@123456!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const btnAdmin = document.getElementById('btnAdmin');
+        const btnUser = document.getElementById('btnUser');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        let currentAccessToken = null;
+
+        // Role Toggle
+        btnAdmin.addEventListener('click', () => {
+            btnAdmin.classList.add('active');
+            btnUser.classList.remove('active');
+            emailInput.value = 'admin@authforge.io';
+            passwordInput.value = 'Admin@123456!';
+        });
+
+        btnUser.addEventListener('click', () => {
+            btnUser.classList.add('active');
+            btnAdmin.classList.remove('active');
+            emailInput.value = 'user@authforge.io';
+            passwordInput.value = 'User@123456!';
+        });
+
+        // Login Form
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            const btn = document.getElementById('submitBtn');
+            const resultDiv = document.getElementById('result');
+            const apiTester = document.getElementById('apiTester');
+            const apiResult = document.getElementById('apiResult');
+            
+            btn.disabled = true;
+            btn.textContent = 'Authenticating...';
+            resultDiv.style.display = 'none';
+            apiTester.style.display = 'none';
+            apiResult.style.display = 'none';
+
+            try {
+                const response = await fetch('http://localhost:3000/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                
+                resultDiv.style.display = 'block';
+                if (response.ok) {
+                    currentAccessToken = data.data.access_token;
+                    resultDiv.className = 'success';
+                    resultDiv.innerHTML = `<strong>✅ Success! Logged in as ${data.data.user.firstName}</strong>\n\nAccess Token:\n${currentAccessToken.substring(0, 40)}...`;
+                    
+                    // Show API tester
+                    apiTester.style.display = 'block';
+                } else {
+                    currentAccessToken = null;
+                    resultDiv.className = 'error';
+                    resultDiv.innerHTML = `<strong>❌ Error:</strong>\n${data.message || 'Authentication failed'}`;
+                }
+            } catch (error) {
+                currentAccessToken = null;
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = `<strong>⚠️ Network Error:</strong>\nMake sure the AuthForge server is running on port 3000.\n\nDetails: ${error.message}`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Authenticate';
+            }
+        });
+
+        // API Tester Functions
+        async function makeApiRequest(endpoint) {
+            const apiResult = document.getElementById('apiResult');
+            apiResult.style.display = 'none';
+            apiResult.innerHTML = 'Loading...';
+            apiResult.className = '';
+            apiResult.style.display = 'block';
+
+            try {
+                const response = await fetch(`http://localhost:3000/api/v1${endpoint}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${currentAccessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    apiResult.className = 'success';
+                    apiResult.innerHTML = `<strong>✅ ${response.status} OK</strong>\n\n${JSON.stringify(data.data, null, 2)}`;
+                } else {
+                    apiResult.className = 'error';
+                    apiResult.innerHTML = `<strong>❌ ${response.status} Error</strong>\n\n${data.error || data.message || 'Permission Denied'}`;
+                }
+            } catch (error) {
+                apiResult.className = 'error';
+                apiResult.innerHTML = `<strong>⚠️ Network Error:</strong>\n${error.message}`;
+            }
+        }
+
+        document.getElementById('btnMyProfile').addEventListener('click', () => {
+            makeApiRequest('/users/me');
+        });
+
+        document.getElementById('btnAllUsers').addEventListener('click', () => {
+            makeApiRequest('/users');
+        });
+    </script>
+</body>
+</html>
